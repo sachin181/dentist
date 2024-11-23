@@ -1,0 +1,12 @@
+{
+  "name": "vf-extensions-demo",
+  "version": "1.0.0",
+  "description": "This repository contains a demonstration of various chat widget extensions for Voiceflow. The extensions include functionality for video playback, timers, forms, maps, file uploads, date selection, confetti effects, and feedback collection.",
+  "main": "extensions.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

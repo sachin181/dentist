@@ -1,4 +1,5 @@
 const SVG_Thumb = `<svg width="24px" height="24px" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.29398 20.4966C4.56534 20.4966 4 19.8827 4 19.1539V12.3847C4 11.6559 4.56534 11.042 5.29398 11.042H8.12364L10.8534 4.92738C10.9558 4.69809 11.1677 4.54023 11.4114 4.50434L11.5175 4.49658C12.3273 4.49658 13.0978 4.85402 13.6571 5.48039C14.2015 6.09009 14.5034 6.90649 14.5034 7.7535L14.5027 8.92295L18.1434 8.92346C18.6445 8.92346 19.1173 9.13931 19.4618 9.51188L19.5612 9.62829C19.8955 10.0523 20.0479 10.6054 19.9868 11.1531L19.1398 18.742C19.0297 19.7286 18.2529 20.4966 17.2964 20.4966H8.69422H5.29398ZM11.9545 6.02658L9.41727 11.7111L9.42149 11.7693L9.42091 19.042H17.2964C17.4587 19.042 17.6222 18.8982 17.6784 18.6701L17.6942 18.5807L18.5412 10.9918C18.5604 10.8194 18.5134 10.6486 18.4189 10.5287C18.3398 10.4284 18.2401 10.378 18.1434 10.378H13.7761C13.3745 10.378 13.0488 10.0524 13.0488 9.65073V7.7535C13.0488 7.2587 12.8749 6.78825 12.5721 6.44915C12.4281 6.28794 12.2615 6.16343 12.0824 6.07923L11.9545 6.02658ZM7.96636 12.4966H5.45455V19.042H7.96636V12.4966Z" fill="white"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M5.29398 20.4966C4.56534 20.4966 4 19.8827 4 19.1539V12.3847C4 11.6559 4.56534 11.042 5.29398 11.042H8.12364L10.8534 4.92738C10.9558 4.69809 11.1677 4.54023 11.4114 4.50434L11.5175 4.49658C12.3273 4.49658 13.0978 4.85402 13.6571 5.48039C14.2015 6.09009 14.5034 6.90649 14.5034 7.7535L14.5027 8.92295L18.1434 8.92346C18.6445 8.92346 19.1173 9.13931 19.4618 9.51188L19.5612 9.62829C19.8955 10.0523 20.0479 10.6054 19.9868 11.1531L19.1398 18.742C19.0297 19.7286 18.2529 20.4966 17.2964 20.4966H8.69422H5.29398ZM11.9545 6.02658L9.41727 11.7111L9.42149 11.7693L9.42091 19.042H17.2964C17.4587 19.042 17.6222 18.8982 17.6784 18.6701L17.6942 18.5807L18.5412 10.9918C18.5604 10.8194 18.5134 10.6486 18.4189 10.5287C18.3398 10.4284 18.2401 10.378 18.1434 10.378H13.7761C13.3745 10.378 13.0488 10.0524 13.0488 9.65073V7.7535C13.0488 7.2587 12.8749 6.78825 12.5721 6.44915C12.4281 6.28794 12.2615 6.16343 12.0824 6.07923L11.9545 6.02658ZM7.96636 12.4966H5.45455V19.042H7.96636V12.4966Z" fill="currentColor"></path></svg>`
+window.vf_done = false
 
 export const DisableInputExtension = {
   name: 'DisableInput',
@@ -620,3 +621,418 @@ export const FeedbackExtension = {
     element.appendChild(feedbackContainer)
   },
 }
+
+// This extension shows a waiting animation with customizable text and delay
+// Also checking for the vf_done value to stop/hide the animation if it's true
+export const WaitingAnimationExtension = {
+  name: 'WaitingAnimation',
+  type: 'response',
+  match: ({ trace }) =>
+    trace.type === 'ext_waitingAnimation' ||
+    trace.payload.name === 'ext_waitingAnimation',
+  render: async ({ trace, element }) => {
+    window.vf_done = true
+    await new Promise((resolve) => setTimeout(resolve, 250))
+    const text = trace.payload?.text || 'Please wait...'
+    const delay = trace.payload?.delay || 3000
+    const waitingContainer = document.createElement('div')
+    waitingContainer.innerHTML = `
+      <style>
+        .vfrc-message--extension-WaitingAnimation {
+          background-color: transparent !important;
+          background: none !important;
+        }
+        .waiting-animation-container {
+          font-family: Arial, sans-serif;
+          font-size: 14px;
+          font-weight: 300;
+          color: #fffc;
+          display: flex;
+          align-items: center;
+          gap: 15px;
+        }
+        .waiting-text {
+          display: inline-block;
+          margin-left: 10px;
+          opacity: 0.9;
+        }
+        .waiting-letter {
+          display: inline-block;
+          animation: pulse 1.5s ease-in-out infinite;
+          transform-origin: center;
+        }
+        @keyframes pulse {
+          0%, 100% { 
+            color: #fffc; 
+            transform: scale(1);
+          }
+          50% { 
+            color: #0066cc; 
+            transform: scale(1.1);
+          }
+        }
+        .spinner {
+          width: 24px;
+          height: 24px;
+          position: relative;
+          border: 3px solid rgba(0, 102, 204, 0.2);
+          border-radius: 50%;
+        }
+        .spinner::after {
+          content: '';
+          position: absolute;
+          top: -3px;
+          left: -3px;
+          right: -3px;
+          bottom: -3px;
+          border-radius: 50%;
+          border: 3px solid transparent;
+          border-top-color: #0066cc;
+          animation: spin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite,
+                     glow 1.5s ease-in-out infinite;
+        }
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        @keyframes glow {
+          0%, 100% { box-shadow: 0 0 5px rgba(0, 102, 204, 0.2); }
+          50% { box-shadow: 0 0 20px rgba(0, 102, 204, 0.6); }
+        }
+      </style>
+      <div class="waiting-animation-container">
+        <div class="spinner"></div>
+        <span class="waiting-text">${text
+          .split('')
+          .map((letter, index) =>
+            letter === ' '
+              ? ' '
+              : `<span class="waiting-letter" style="animation-delay: ${
+                  index * (1500 / text.length)
+                }ms">${letter}</span>`
+          )
+          .join('')}</span>
+      </div>
+    `
+    element.appendChild(waitingContainer)
+    window.voiceflow.chat.interact({
+      type: 'continue',
+    })
+
+    let intervalCleared = false
+    window.vf_done = false
+    const checkDoneInterval = setInterval(() => {
+      if (window.vf_done) {
+        clearInterval(checkDoneInterval)
+        waitingContainer.style.display = 'none'
+        window.vf_done = false
+      }
+    }, 100)
+
+    setTimeout(() => {
+      if (!intervalCleared) {
+        clearInterval(checkDoneInterval)
+        waitingContainer.style.display = 'none'
+      }
+    }, delay)
+  },
+}
+
+// This extension triggers a "done" action,
+// typically used to signal the completion of a task
+// and hide a previous WaitingAnimation
+export const DoneAnimationExtension = {
+  name: 'DoneAnimation',
+  type: 'response',
+  match: ({ trace }) =>
+    trace.type === 'ext_doneAnimation' ||
+    trace.payload.name === 'ext_doneAnimation',
+  render: async ({ trace, element }) => {
+    window.vf_done = true
+    await new Promise((resolve) => setTimeout(resolve, 250))
+
+    window.voiceflow.chat.interact({
+      type: 'continue',
+    })
+  },
+}
+
+
+
+export const TimeSlotExtension = {
+  name: 'TimeSlots',
+  type: 'response',
+  match: ({ trace }) => 
+    trace.type === 'ext_timeslots' || trace.payload.name === 'ext_timeslots',
+  render: ({ trace, element }) => {
+    const container = document.createElement('div');
+    
+    // Styles
+    const styles = `
+      <style>
+        .time-slots-container {
+          background: white;
+          border-radius: 12px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          margin: 8px 0;
+          max-width: 100%;
+          overflow: hidden;
+        }
+
+        .time-slots-header {
+          border-bottom: 1px solid #e5e7eb;
+          padding: 16px;
+        }
+
+        .time-slots-title {
+          color: #1f2937;
+          font-size: 1.25rem;
+          font-weight: 600;
+          margin: 0;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .date-group {
+          padding: 16px;
+        }
+
+        .date-title {
+          color: #374151;
+          font-size: 1.125rem;
+          font-weight: 500;
+          margin: 0 0 12px 0;
+        }
+
+        .time-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+          gap: 8px;
+          margin-bottom: 16px;
+        }
+
+        .time-slot {
+          background: #f3f4f6;
+          border: 1px solid #e5e7eb;
+          border-radius: 8px;
+          color: #374151;
+          cursor: pointer;
+          font-size: 0.875rem;
+          font-weight: 500;
+          padding: 8px 12px;
+          text-align: center;
+          transition: all 0.2s;
+        }
+
+        .time-slot:hover {
+          background: #eff6ff;
+          border-color: #93c5fd;
+          color: #2563eb;
+        }
+
+        .time-slot.selected {
+          background: #2563eb;
+          border-color: #2563eb;
+          color: white;
+        }
+
+        .helper-text {
+          color: #6b7280;
+          font-size: 0.875rem;
+          text-align: center;
+          padding: 0 16px 16px;
+        }
+
+        .button-group {
+          padding: 0 16px 16px;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .submit-button {
+          background: linear-gradient(to right, #2e6ee1, #2e7ff1);
+          border: none;
+          border-radius: 8px;
+          color: white;
+          cursor: pointer;
+          font-size: 0.875rem;
+          font-weight: 500;
+          padding: 12px;
+          width: 100%;
+          opacity: 0.3;
+          transition: opacity 0.2s;
+        }
+
+        .submit-button:enabled {
+          opacity: 1;
+        }
+
+        .secondary-button {
+          background: #f3f4f6;
+          border: 1px solid #e5e7eb;
+          border-radius: 8px;
+          color: #374151;
+          cursor: pointer;
+          font-size: 0.875rem;
+          font-weight: 500;
+          padding: 12px;
+          width: 100%;
+          transition: all 0.2s;
+        }
+
+        .secondary-button:hover {
+          background: #e5e7eb;
+        }
+
+        .quit-button {
+          background: #fee2e2;
+          border: 1px solid #fecaca;
+          color: #dc2626;
+        }
+
+        .quit-button:hover {
+          background: #fecaca;
+        }
+      </style>
+    `;
+
+    // Parse the slots data from trace payload or use default data
+    const slots = trace.payload.slots || {
+      'November 13': [
+        '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM',
+        '12:00 PM', '2:00 PM'
+      ],
+      'November 14': [
+        '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM',
+        '12:00 PM', '12:30 PM', '1:00 PM', '1:30 PM',
+        '2:00 PM', '2:30 PM', '3:00 PM', '3:30 PM',
+        '4:00 PM'
+      ]
+    };
+
+    // Create HTML structure
+    const html = `
+      ${styles}
+      <div class="time-slots-container">
+        <div class="time-slots-header">
+          <h3 class="time-slots-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            Available Appointment Slots
+          </h3>
+        </div>
+        ${Object.entries(slots).map(([date, times]) => `
+          <div class="date-group">
+            <h4 class="date-title">${date}</h4>
+            <div class="time-grid">
+              ${times.map(time => `
+                <button class="time-slot" data-date="${date}" data-time="${time}">
+                  ${time}
+                </button>
+              `).join('')}
+            </div>
+          </div>
+        `).join('')}
+        <div class="helper-text">
+          Select your preferred appointment time or choose another option below
+        </div>
+        <div class="button-group">
+          <button class="submit-button" disabled>
+            Confirm Selection
+          </button>
+          <button class="secondary-button different-date-button">
+            I want a different date
+          </button>
+          <button class="secondary-button quit-button">
+            Cancel booking
+          </button>
+        </div>
+      </div>
+    `;
+
+    container.innerHTML = html;
+
+    // Add event listeners
+    let selectedSlot = null;
+    const submitButton = container.querySelector('.submit-button');
+    const differentDateButton = container.querySelector('.different-date-button');
+    const quitButton = container.querySelector('.quit-button');
+
+    container.addEventListener('click', (event) => {
+      const timeSlot = event.target.closest('.time-slot');
+      if (!timeSlot) return;
+
+      // Remove previous selection
+      if (selectedSlot) {
+        selectedSlot.classList.remove('selected');
+      }
+
+      // Update new selection
+      timeSlot.classList.add('selected');
+      selectedSlot = timeSlot;
+      submitButton.disabled = false;
+    });
+
+    submitButton.addEventListener('click', () => {
+      if (!selectedSlot) return;
+
+      const date = selectedSlot.dataset.date;
+      const time = selectedSlot.dataset.time;
+
+      // Get current year
+      const currentYear = new Date().getFullYear();
+      
+      // Create date object from selected date and time
+      const dateObj = new Date(`${date} ${currentYear} ${time}`);
+      
+      // Format date_time string as YYYY/MM/DD HH:mm
+      const formatNumber = (num) => num.toString().padStart(2, '0');
+      
+      const formattedDateTime = `${dateObj.getFullYear()}/${formatNumber(dateObj.getMonth() + 1)}/${formatNumber(dateObj.getDate())} ${formatNumber(dateObj.getHours())}:${formatNumber(dateObj.getMinutes())}`;
+
+      // Send the selection back to Voiceflow
+      window.voiceflow.chat.interact({
+        type: 'complete',
+        payload: { 
+          date_time: formattedDateTime,
+          action: 'confirm'
+        },
+      });
+    });
+
+    differentDateButton.addEventListener('click', () => {
+      window.voiceflow.chat.interact({
+        type: 'complete',
+        payload: { 
+          action: 'different_date'
+        },
+      });
+    });
+
+    quitButton.addEventListener('click', () => {
+      window.voiceflow.chat.interact({
+        type: 'complete',
+        payload: { 
+          action: 'quit'
+        },
+      });
+    });
+
+    element.appendChild(container);
+  },
+};
+
+
+
+
+
+
+
+
+

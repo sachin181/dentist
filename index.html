@@ -40,16 +40,19 @@
                 KBUploadExtension,
                 DateExtension,
                 ConfettiExtension,
-                FeedbackExtension } from '/extensions.js';
+                FeedbackExtension,
+                WaitingAnimationExtension,
+                DoneAnimationExtension,
+                TimeSlotExtension } from '/extensions.js';
 
       (function (d, t) {
         var v = d.createElement(t),
           s = d.getElementsByTagName(t)[0];
         v.onload = function () {
           window.voiceflow.chat.load({
-            verify: { projectID: '66c367ef77162a334f4bf64f' },
+            verify: { projectID: '67302b9b42d84b217959ad31' },
             url: 'https://general-runtime.voiceflow.com',
-            versionID: 'development',
+            versionID: 'production',
             user: {
               name: 'Demo User',
             },
@@ -59,6 +62,7 @@
             autostart: true,
             allowDangerousHTML: true,
             assistant: {
+              stylesheet: "data:text/css;base64,LnZmcmMtdGltZXN0YW1wIHtkaXNwbGF5OiBub25lO30udmZyYy1tZXNzYWdlIHttYXJnaW4tbGVmdDogMHB4ICFpbXBvcnRhbnQ7bWFyZ2luLXJpZ2h0OiAtMTBweCAhaW1wb3J0YW50O30udmZyYy1zeXN0ZW0tcmVzcG9uc2UtLWxpc3Qge21hcmdpbi1yaWdodDogNDBweCAhaW1wb3J0YW50O30udmZyYy1zeXN0ZW0tcmVzcG9uc2UtLW1lc3NhZ2Uge21hcmdpbi1yaWdodDogMHB4ICFpbXBvcnRhbnQ7fS52ZnJjLXN5c3RlbS1yZXNwb25zZSAudmZyYy1hdmF0YXIge2Rpc3BsYXk6IG5vbmU7fS52ZnJjLXN5c3RlbS1yZXNwb25zZS0taW5kaWNhdG9yIHtkaXNwbGF5OiBub25lICFpbXBvcnRhbnQ7fS52ZnJjLXVzZXItcmVzcG9uc2UtLXJvdyB7bWFyZ2luLXJpZ2h0OiAwcHggIWltcG9ydGFudDtmbGV4LWRpcmVjdGlvbjogcm93LXJldmVyc2UgIWltcG9ydGFudDttYXJnaW4tcmlnaHQ6IDEwcHggIWltcG9ydGFudDt9LnZmcmMtc3lzdGVtLXJlc3BvbnNlLS1hY3Rpb25zIHtwYWRkaW5nLWxlZnQ6IDIwcHggIWltcG9ydGFudDtwYWRkaW5nLXJpZ2h0OiAxMHB4ICFpbXBvcnRhbnQ7bWFyZ2luOiAwICFpbXBvcnRhbnQ7ZmxleC1kaXJlY3Rpb246IGNvbHVtbiAhaW1wb3J0YW50O2Rpc3BsYXk6IGZsZXggIWltcG9ydGFudDtnYXA6IDhweCAhaW1wb3J0YW50O2FsaWduLWl0ZW1zOiBmbGV4LXN0YXJ0ICFpbXBvcnRhbnQ7fS52ZnJjLXN5c3RlbS1yZXNwb25zZS0tYWN0aW9ucyAudmZyYy1idXR0b24ge3dpZHRoOiBhdXRvICFpbXBvcnRhbnQ7bWFyZ2luOiAwICFpbXBvcnRhbnQ7fQ==", // link to your self-hosted stylesheet
               extensions: [
                 DisableInputExtension,
                 VideoExtension,
@@ -70,6 +74,9 @@
                 DateExtension,
                 ConfettiExtension,
                 FeedbackExtension,
+                WaitingAnimationExtension,
+                DoneAnimationExtension,
+                TimeSlotExtension,
               ],
             },
           });
@@ -81,3 +88,5 @@
     </script>
   </body>
 </html>
+
+
